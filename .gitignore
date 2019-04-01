@@ -1,0 +1,5 @@
+*.cov
+*.cov.gz
+*.DS_Store
+*.cov 2
+*.csv
