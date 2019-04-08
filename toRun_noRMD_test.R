@@ -3,7 +3,7 @@
 # biocLite("preprocessCore")
 
 #Put here the location of the package
-setwd("/Users/anant/MouseEpigeneticClock-master/")
+setwd("/Users/anant/Methylation Age Prediction/")
 #setwd("./PredictionPackage_20170215/")
 #setwd("/Users/anant/MouseEpigeneticClock-master/PredictionPackage_20170215/")
 
@@ -91,72 +91,81 @@ alt_betas
 alt_SFP <- sitesForPrediction
 alt_SFP
 
-rownames(filesToProcess[[1]])
-sitesForPrediction
-# for(j in 1:length(filesToProcess))
-# {
-#   temp2 <- filesToProcess[[j]]
-#   is_not_inSFP <- sitesForPrediction[which(!(rownames(sitesForPrediction) %in rownames(temp2))),]
+head(filesToProcess[[1]])
+
+x <- rownames(filesToProcess[[1]])
+head(x)
+class(x)
+class(sitesForPrediction)
+head(sitesForPrediction)
+is_in_SFP <- which(sitesForPrediction %in% x)
+
+
+(is_in_SFP)
+upd_SFP <- sitesForPrediction[is_in_SFP]
+upd_SFP
+
+
+# for(i in 1:length(filesToProcess)){
+#   temp2 <- data.frame(rownames(filesToProcess[[i]]))
+#   head(temp2)
+#   dfSFP <- data.frame(sitesForPrediction)
+#   head(dfSFP)
+#   is_not_inSFP <- dfSFP[which(!(dfSFP) %in% temp2),]
 #   upd_iniSFP <- data.frame(is_not_inSFP)
+#   
 # }
+# is_not_inSFP
+# dim(upd_iniSFP)
+# 
+# print('update')
+# 
+# store2 <- upd_iniSFP[,1]
+# store2
+# 
+# upd_SFP = alt_SFP[!(alt_SFP) %in% store2,]
+# upd_SFP2 = data.frame(upd_SFP)
+# 
+# upd_betas = alt_betas[!rownames(alt_betas) %in% store,]
+# upd_betas2 = data.frame(upd_betas)
+# 
+# upd_betas2
 
 
-for(i in 1:length(filesToProcess)){
-  temp2 <- data.frame(rownames(filesToProcess[[i]]))
-  dfSFP <- data.frame(sitesForPrediction)
-  is_not_inSFP <- dfSFP[which(!(dfSFP) %in% temp2),]
-  upd_iniSFP <- data.frame(is_not_inSFP)
-  
+
+if(dim(filesToProcess[[i]])[1]==length(upd_SFP)){
+  filesToProcess[[i]][,1] <- normalize.quantiles.use.target(matrix(filesToProcess[[i]][,1],ncol=1), target = qnTarget)
+  print(paste("QN was performed for sample: ",names(filesToProcess)[i]))
+  qnPerformed <- c(qnPerformed,T)
+} else {
+  print(paste("QN was not possible for sample: ",names(filesToProcess)[i]))
+  qnPerformed <- c(qnPerformed,F)
 }
-is_not_inSFP
-dim(upd_iniSFP)
+rownames(betas)
+dim(betas)
+rownames(filesToProcess[[1]])
+filesToProcess[[i]] <- filesToProcess[[i]][which(rownames(filesToProcess[[i]]) %in% rownames(betas)),]
 
-store2 <- upd_iniSFP[,1]
-store2
+print(filesToProcess[[i]])
+print(dim(filesToProcess[[i]])[1])
+print(length(rownames(betas)))
 
-upd_SFP = alt_SFP[!(alt_SFP) %in% store2,]
-upd_SFP2 = data.frame(upd_SFP)
-
-upd_betas = alt_betas[!rownames(alt_betas) %in% store,]
-upd_betas2 = data.frame(upd_betas)
-
-upd_betas2
-
-
+if(dim(filesToProcess[[i]])[1]==length(rownames(upd_betas2))){
   
-  if(dim(filesToProcess[[i]])[1]==length(sitesForPrediction)){
-    filesToProcess[[i]][,1] <- normalize.quantiles.use.target(matrix(filesToProcess[[i]][,1],ncol=1), target = qnTarget)
-    print(paste("QN was performed for sample: ",names(filesToProcess)[i]))
-    qnPerformed <- c(qnPerformed,T)
-  } else {
-    print(paste("QN was not possible for sample: ",names(filesToProcess)[i]))
-    qnPerformed <- c(qnPerformed,F)
-  }
-  rownames(betas)
-  dim(betas)
-  rownames(filesToProcess[[1]])
-  filesToProcess[[i]] <- filesToProcess[[i]][which(rownames(filesToProcess[[i]]) %in% rownames(betas)),]
+  filesToProcess[[i]] <- filesToProcess[[i]][order(rownames(filesToProcess[[i]])),]
+  filesToProcess[[i]]<- sweep(x =filesToProcess[[i]], 1, rowMean, "-" )
+  filesToProcess[[i]] <- sweep(x =filesToProcess[[i]], 1, rowStDev, "/" )
   
-  print(filesToProcess[[i]])
-  print(dim(filesToProcess[[i]])[1])
-  print(length(rownames(betas)))
+  sitesTrainingData <- as.data.frame(filesToProcess[[i]][,1])
+  betaScoreSample <- sitesTrainingData*upd_betas2
+  betaScoreSample <- apply(betaScoreSample,2, sum)
   
-  if(dim(filesToProcess[[i]])[1]==length(rownames(upd_betas2))){
-    
-    filesToProcess[[i]] <- filesToProcess[[i]][order(rownames(filesToProcess[[i]])),]
-    filesToProcess[[i]]<- sweep(x =filesToProcess[[i]], 1, rowMean, "-" )
-    filesToProcess[[i]] <- sweep(x =filesToProcess[[i]], 1, rowStDev, "/" )
-    
-    sitesTrainingData <- as.data.frame(filesToProcess[[i]][,1])
-    betaScoreSample <- sitesTrainingData*upd_betas2
-    betaScoreSample <- apply(betaScoreSample,2, sum)
-    
-    predictedAges[names(filesToProcess)[i]] <- revertAge(betaScoreSample)
-    print(paste("Age was predicted for sample: ",names(filesToProcess)[i]))
-  } else {
-    print(paste("Unable to predict age for sample: ",names(filesToProcess)[i]))
-    predictedAges[names(filesToProcess)[i]] <- NA
-  }
+  predictedAges[names(filesToProcess)[i]] <- revertAge(betaScoreSample)
+  print(paste("Age was predicted for sample: ",names(filesToProcess)[i]))
+} else {
+  print(paste("Unable to predict age for sample: ",names(filesToProcess)[i]))
+  predictedAges[names(filesToProcess)[i]] <- NA
+}
 
 
 dim(filesToProcess[[i]])[1]
@@ -170,6 +179,6 @@ for(i in 1:length(predictedAges)){
 }
 
 
-
+getwd()
 
 
