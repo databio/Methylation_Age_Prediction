@@ -13,7 +13,7 @@ setwd("/Users/anant/Methylation Age Prediction/")
 RdataF = "./PredictionPackage_20170215.Rdata"
 print(RdataF)
 functionFile = "./PredictorFunctions.R"
-covFolder = "./bismarkFilesN1/"
+covFolder = "./AgePredictionInputData/bismarkFilesN12/"
 ReadDepth = 5
 
 
