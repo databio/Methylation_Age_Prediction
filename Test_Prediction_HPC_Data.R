@@ -45,27 +45,18 @@ for(file in toProcess){
   filesToProcess[[file]] <- tmp
   
 }
-tmp
-dim(tmp)
 
-sitesForPrediction
-length(sitesForPrediction)
 
 predictedAges <- list()
 qnPerformed <- NULL
 
-dim(filesToProcess[[1]])
-
-filesToProcess[[1]]
-
-length(sitesForPrediction)
 
 alt_betas <- betas
 alt_betas
 
 rownames(betas)
 
-#***Code to create vector with only matched sites for the age Prediction
+#***Creating vector with only matched sites for the age Prediction
 for(i in 1:length(filesToProcess)){
   temp <- filesToProcess[[i]]
   is_not_in <- betas[which(!(rownames(betas) %in% rownames(temp))),]
@@ -73,27 +64,23 @@ for(i in 1:length(filesToProcess)){
 }
 
 #print(not_in[[1]])
-filesToProcess[1]
-dim(filesToProcess[[1]])[1]
+
 
 store <- rownames(upd_ini)
-store
+
 
 upd_betas = alt_betas[!rownames(alt_betas) %in% store,]
 upd_betas2 = data.frame(upd_betas)
 
-upd_betas2
 
-dim(upd_betas2)
-
-alt_betas
 
 alt_SFP <- sitesForPrediction
 alt_SFP
 
-head(filesToProcess[[1]])
+#***
 
-#*** Code to create vector with only matched sites for data normalization
+
+#***Creating vector with only matched sites for data normalization
 x <- rownames(filesToProcess[[1]])
 head(x)
 class(x)
@@ -104,7 +91,8 @@ is_in_SFP <- which(sitesForPrediction %in% x)
 
 (is_in_SFP)
 upd_SFP <- sitesForPrediction[is_in_SFP]
-upd_SFP
+
+#***
 
 
 # for(i in 1:length(filesToProcess)){

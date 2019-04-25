@@ -9,7 +9,6 @@ file_out <- "HPC1_Output_Processed.cov"#Output filename
 
 processInput <- function(input_filename, output_filename){
   
-  print('hello2')
   data <- fread(input_filename)
   DT = data.table(data)
   head(DT)
@@ -34,8 +33,7 @@ processInput <- function(input_filename, output_filename){
   length(DT)
   head(DT)
   
-  print('hello3')
-  
+
   DT <- DT[dif != 0]
   head(DT)
   nrow(DT)
@@ -67,16 +65,16 @@ processInput <- function(input_filename, output_filename){
   new_DT
   write.table(new_DT, file = "2_12_HPC_1.cov", row.names = FALSE, col.names = FALSE, sep = "\t" )
   
-  #Up until here, just processing the initial .bed file with collapsing
+  #Up until here, just processing the initial .bed file with collapsing positive strands of same site onto negative strand
   
   
   DT2 <- fread('2_12_HPC_1.cov')
-  DT2
-  DT2[V1 == 10]
-  dim(DT2)
-  c <- 1 
-  DT3 <- data.table()
-  DT3
+  #DT2 <- new_DT[, list(V1, V2, V3, V4, V5)]
+  #DT2[V1 == 10]
+  #dim(DT2)
+  #c <- 1 
+  #DT3 <- data.table()
+  #DT3
   # for (row in 1:nrow(DT2)) {
   #   val <- DT2[row]$V2
   #   val
@@ -93,7 +91,7 @@ processInput <- function(input_filename, output_filename){
   #   temp$V2 <- val_high
   #   DT3 <- rbind(DT3, data.table(temp))
   # }
-  DT3
+  #DT3
   
   pts <- DT2$V2
   pts_low <- pts - 1
@@ -129,8 +127,8 @@ processInput <- function(input_filename, output_filename){
   
   write.table(new_DT_2, file = output_filename, row.names = FALSE, col.names = FALSE, sep = "\t" )
   
+  #This section adds the sites above and below the original site to account for any 1 base pair differences in either direction
 }
 
 processInput(file_in,file_out)
-print('hello')
 
